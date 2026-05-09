@@ -1,0 +1,59 @@
+extension:
+  name: financial_functions
+  description: All 55 Excel-compatible financial functions for DuckDB — annuity, cash flows, depreciation, coupon dates, bonds, and miscellaneous
+  version: 0.1.0
+  language: Rust & C++
+  build: cmake
+  license: MIT
+  maintainers:
+    - Tor-Storli
+  # Uncomment the line below if WASM is not supported by your Rust deps
+  # excluded_platforms: "wasm_mvp;wasm_eh"
+
+repo:
+  github: Tor-Storli/Financial_Functions
+  ref: e9d5a2300000000000000000000000000000000000   # ← REPLACE with your real full SHA (see instructions)
+
+docs:
+  hello_world: |
+    -- Monthly mortgage payment on a $350,000 loan at 3.25% over 15 years
+    SELECT ROUND(pmt(0.0325/12, 180, 350000, 0, false), 2) AS monthly_payment;
+    -- Result: -2459.34
+
+    -- Net Present Value of a project at 10% discount rate
+    SELECT ROUND(npv(0.10, '-10000,3000,4200,6800'), 2) AS npv;
+    -- Result: 1188.44
+
+    -- Internal Rate of Return on a 5-year investment
+    SELECT ROUND(irr('-70000,12000,15000,18000,21000,26000'), 4) AS irr;
+    -- Result: 0.0866
+
+  extended_description: |
+    financial_functions exposes all 55 Excel-compatible financial functions
+    directly in DuckDB SQL. Functions are organised into six groups:
+
+    **Annuity (10):** fv, pv, pmt, ipmt, ppmt, cumipmt, cumprinc, nper, rate, ispmt
+
+    **Cash Flows (5):** npv, xnpv, irr, xirr, mirr
+
+    **Depreciation (7):** sln, syd, db, ddb, vdb, amorlinc, amordegrc
+
+    **Coupon Dates (6):** coupdaybs, coupdays, coupdaysnc, coupncd, couppcd, coupnum
+
+    **Bonds & Securities (13):** price, pricedisc, pricemat, yield, yielddisc,
+    yieldmat, disc, intrate, received, duration, mduration, accrint, accrintm
+
+    **Miscellaneous (14):** effect, nominal, dollarde, dollarfr, fvschedule, rri,
+    pduration, tbillprice, tbillyield, tbilleq, oddfprice, oddfyield, oddlprice,
+    oddlyield
+
+    All functions match Excel's behaviour, including sign conventions (payments are
+    negative cash outflows), day-count basis codes 0–4, and iterative solvers for
+    RATE, YIELD, IRR, and XIRR. Invalid inputs return NULL rather than crashing.
+
+    Array inputs (NPV, IRR, XNPV, XIRR, MIRR, FVSCHEDULE) are passed as
+    comma-separated strings: `npv(0.10, '-10000,3000,4200,6800')`.
+
+    Date inputs are passed as 'YYYY-MM-DD' VARCHAR strings.
+
+    Source: https://github.com/Tor-Storli/Financial_Functions
